@@ -1,0 +1,36 @@
+make prime list
+
+bool num[100010];
+vector<int>prime;
+void mprime(){
+    for(int i=2;i<100010;i++){
+        if(num[i]==0){
+            prime.push_back(i);
+            for(int j=i*2;j<100010;j+=i){
+                num[j]=1;
+            }
+        }
+    }
+}
+
+_________________________________________
+faster
+
+std::ios_base::sync_with_stdio(0);
+cin.tie(0);
+cout.tie(0);
+
+_________________________________________
+test speed
+
+x*x%(int(1e9+7));
+
+_________________________________________
+open warning 
+
+-Wall -Wextra -Wshadow
+
+_________________________________________
+print
+
+printf("%05d\n",a);     //用0補到五位數
