@@ -1,105 +1,49 @@
 class Solution {
 public:
-    int ans = 8, n, m;
-    
+    int ones;
+    int ans = 10;
+    int n, m;
     bool isin(int r, int c){
         return r>=0 && r<n && c>=0 && c<m;
     }
     
-    void dfs(vector<vector<int>>& mat, int r, int c, int cnt, int ones){
-        if(!ones){
-            ans = min(ans, cnt);
-            return;
-        }
-        if(cnt >= ans)
-            return;
-        for(int i = 0; i < n; i++){
-            for(int j = 0; j < m; j++){
-                int plus = 0;
-                if(mat[i][j]){
-                    plus--;
-                    ones--;
-                }
-                else{
-                    ones++;
-                    plus++;
-                }
-                mat[i][j] = !mat[i][j];
-                if(isin(i+1, j)){
-                    if(mat[i+1][j]){
-                        plus--;
-                        ones--;
-                    }
-                    else{
-                        ones++;
-                        plus++;
-                    }
-                    mat[i+1][j] = !mat[i+1][j];
-                }
-                if(isin(i-1, j)){
-                    if(mat[i-1][j]){
-                        plus--;
-                        ones--;
-                    }
-                    else{
-                        ones++;
-                        plus++;
-                    }
-                    mat[i-1][j] = !mat[i-1][j];
-                }
-                if(isin(i, j+1)){
-                    if(mat[i][j+1]){
-                        plus--;
-                        ones--;
-                    }
-                    else{
-                        ones++;
-                        plus++;
-                    }
-                    mat[i][j+1] = !mat[i][j+1];
-                }
-                if(isin(i, j-1)){
-                    if(mat[i][j-1]){
-                        plus--;
-                        ones--;
-                    }
-                    else{
-                        ones++;
-                        plus++;
-                    }
-                    mat[i][j-1] = !mat[i][j-1];
-                }
-                dfs(mat, i, j, cnt+1, ones);
-                ones -= plus;
-                mat[i][j] = !mat[i][j];
-                if(isin(i+1, j)){
-                    mat[i+1][j] = !mat[i+1][j];
-                }
-                if(isin(i-1, j)){
-                    mat[i-1][j] = !mat[i-1][j];
-                }
-                if(isin(i, j+1)){
-                    mat[i][j+1] = !mat[i][j+1];
-                }
-                if(isin(i, j-1)){
-                    mat[i][j-1] = !mat[i][j-1];
-                }
+    void flip(int i, vector<vector<int>>& mat){
+        int r = i/mat[0].size(), c = i%mat[0].size();
+        int dx[] = {0, 1, -1, 0, 0};
+        int dy[] = {0, 0, 0, 1, -1};
+        for(int i = 0; i < 5; i++){
+            int nowr = r + dx[i], nowc = c + dy[i];
+            if(isin(nowr, nowc)){
+                ones += mat[nowr][nowc]?-1:1;
+                mat[nowr][nowc] = !mat[nowr][nowc];
             }
         }
     }
-    int minFlips(vector<vector<int>>& mat) {
-        int ones = 0;
-        n = mat.size();
-        m = mat[0].size();
-        for(auto& r: mat){
-            for(auto & c: r){
-                if(c) ones ++;
+    
+    int minFlips(vector<vector<int>>& orig) {
+        int ones0 = 0;
+        for(auto v: orig){
+            for(auto a: v){
+                if(a)ones0++;
             }
         }
-        if(!ones)
-            return 0;
-        dfs(mat, 0, 0, 0, ones);
-        if(ans == 8)
+        vector<vector<int>> mat = orig;
+        n = mat.size(); m = mat[0].size();
+        int c = n * m;
+        for(int s = 0; s < (1<<c); s++){
+            int cnt = 0;
+            mat = orig;
+            ones = ones0;
+            for(int i = 0; i < c; i++){
+                if(s & (1<<i)){
+                    flip(i, mat);
+                    cnt++;
+                }
+            }
+            if(!ones)
+                ans = min(ans, cnt);
+        }
+        if(ans == 10)
             return -1;
         return ans;
     }
